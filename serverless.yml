@@ -27,12 +27,16 @@ provider:
 
 plugins:
   - serverless-finch
+  - serverless-single-page-app-plugin
 
 custom:
   client:
-    bucketName: learn-nodejs-on-aws-fe
+    bucketName: learn-nodejs-on-aws-fe-second
     distributionFolder: build
     region: eu-west-1
+
+  s3LocalPath: ${self:custom.client.distributionFolder}/
+  s3BucketName: ${self:custom.client.bucketName}
 
 # you can overwrite defaults here
 #  stage: dev
@@ -110,13 +114,14 @@ custom:
 #      variable2: value2
 
 # you can add CloudFormation resource templates here
-#resources:
-#  Resources:
-#    NewResource:
-#      Type: AWS::S3::Bucket
-#      Properties:
-#        BucketName: my-new-bucket
-#  Outputs:
-#     NewOutput:
-#       Description: "Description for the output"
-#       Value: "Some output value"
+resources:
+  Resources:
+    ## Specifying the S3 Bucket
+    WebAppS3Bucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.client.bucketName}
+        AccessControl: PublicRead
+        WebsiteConfiguration:
+          IndexDocument: index.html
+          ErrorDocument: index.html
