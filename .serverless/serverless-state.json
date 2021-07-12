@@ -94,6 +94,76 @@
                 "ErrorDocument": "index.html"
               }
             }
+          },
+          "WebAppS3BucketPolicy": {
+            "Type": "AWS::S3::BucketPolicy",
+            "Properties": {
+              "Bucket": {
+                "Ref": "WebAppS3Bucket"
+              },
+              "PolicyDocument": {
+                "Statement": [
+                  {
+                    "Sid": "PublicReadGetObject",
+                    "Effect": "Allow",
+                    "Principal": "*",
+                    "Action": [
+                      "s3:GetObject"
+                    ],
+                    "Resource": "arn:aws:s3:::learn-nodejs-on-aws-fe-second/*"
+                  }
+                ]
+              }
+            }
+          },
+          "WebAppCloudFrontDistribution": {
+            "Type": "AWS::CloudFront::Distribution",
+            "Properties": {
+              "DistributionConfig": {
+                "Origins": [
+                  {
+                    "DomainName": "learn-nodejs-on-aws-fe-second.s3.amazonaws.com",
+                    "Id": "WebApp",
+                    "CustomOriginConfig": {
+                      "HTTPPort": 80,
+                      "HTTPSPort": 443,
+                      "OriginProtocolPolicy": "https-only"
+                    }
+                  }
+                ],
+                "Enabled": "true",
+                "DefaultRootObject": "index.html",
+                "CustomErrorResponses": [
+                  {
+                    "ErrorCode": 404,
+                    "ResponseCode": 200,
+                    "ResponsePagePath": "/index.html"
+                  }
+                ],
+                "DefaultCacheBehavior": {
+                  "AllowedMethods": [
+                    "DELETE",
+                    "GET",
+                    "HEAD",
+                    "OPTIONS",
+                    "PATCH",
+                    "POST",
+                    "PUT"
+                  ],
+                  "TargetOriginId": "WebApp",
+                  "ForwardedValues": {
+                    "QueryString": "false",
+                    "Cookies": {
+                      "Forward": "none"
+                    }
+                  },
+                  "ViewerProtocolPolicy": "redirect-to-https"
+                },
+                "ViewerCertificate": {
+                  "CloudFrontDefaultCertificate": "true"
+                }
+              }
+            }
           }
         },
         "Outputs": {
@@ -103,6 +173,14 @@
             },
             "Export": {
               "Name": "sls-my-first-rs-app-dev-ServerlessDeploymentBucketName"
+            }
+          },
+          "WebAppCloudFrontDistributionOutput": {
+            "Value": {
+              "Fn::GetAtt": [
+                "WebAppCloudFrontDistribution",
+                "DomainName"
+              ]
             }
           }
         }
@@ -193,8 +271,7 @@
     "custom": {
       "client": {
         "bucketName": "learn-nodejs-on-aws-fe-second",
-        "distributionFolder": "build",
-        "region": "eu-west-1"
+        "distributionFolder": "build"
       },
       "s3LocalPath": "build/",
       "s3BucketName": "learn-nodejs-on-aws-fe-second"
@@ -217,9 +294,88 @@
               "ErrorDocument": "index.html"
             }
           }
+        },
+        "WebAppS3BucketPolicy": {
+          "Type": "AWS::S3::BucketPolicy",
+          "Properties": {
+            "Bucket": {
+              "Ref": "WebAppS3Bucket"
+            },
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Sid": "PublicReadGetObject",
+                  "Effect": "Allow",
+                  "Principal": "*",
+                  "Action": [
+                    "s3:GetObject"
+                  ],
+                  "Resource": "arn:aws:s3:::learn-nodejs-on-aws-fe-second/*"
+                }
+              ]
+            }
+          }
+        },
+        "WebAppCloudFrontDistribution": {
+          "Type": "AWS::CloudFront::Distribution",
+          "Properties": {
+            "DistributionConfig": {
+              "Origins": [
+                {
+                  "DomainName": "learn-nodejs-on-aws-fe-second.s3.amazonaws.com",
+                  "Id": "WebApp",
+                  "CustomOriginConfig": {
+                    "HTTPPort": 80,
+                    "HTTPSPort": 443,
+                    "OriginProtocolPolicy": "https-only"
+                  }
+                }
+              ],
+              "Enabled": "true",
+              "DefaultRootObject": "index.html",
+              "CustomErrorResponses": [
+                {
+                  "ErrorCode": 404,
+                  "ResponseCode": 200,
+                  "ResponsePagePath": "/index.html"
+                }
+              ],
+              "DefaultCacheBehavior": {
+                "AllowedMethods": [
+                  "DELETE",
+                  "GET",
+                  "HEAD",
+                  "OPTIONS",
+                  "PATCH",
+                  "POST",
+                  "PUT"
+                ],
+                "TargetOriginId": "WebApp",
+                "ForwardedValues": {
+                  "QueryString": "false",
+                  "Cookies": {
+                    "Forward": "none"
+                  }
+                },
+                "ViewerProtocolPolicy": "redirect-to-https"
+              },
+              "ViewerCertificate": {
+                "CloudFrontDefaultCertificate": "true"
+              }
+            }
+          }
         }
       },
-      "Outputs": {}
+      "Outputs": {
+        "WebAppCloudFrontDistributionOutput": {
+          "Value": {
+            "Fn::GetAtt": [
+              "WebAppCloudFrontDistribution",
+              "DomainName"
+            ]
+          }
+        }
+      }
     },
     "configValidationMode": "warn",
     "serviceFilename": "serverless.yml",
@@ -228,6 +384,7 @@
         "$ref": "$[\"service\"][\"serviceObject\"]"
       },
       "frameworkVersion": "2",
+      "variablesResolutionMode": "20210326",
       "provider": {
         "$ref": "$[\"service\"][\"provider\"]"
       },
@@ -245,7 +402,7 @@
     "isDashboardMonitoringPreconfigured": false
   },
   "package": {
-    "artifactDirectoryName": "serverless/my-first-rs-app/dev/1626014326555-2021-07-11T14:38:46.555Z",
+    "artifactDirectoryName": "serverless/my-first-rs-app/dev/1626072535774-2021-07-12T06:48:55.774Z",
     "artifact": ""
   }
 }
